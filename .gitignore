@@ -1,0 +1,98 @@
+# ===== Visual Studio / .NET (WPF) =====
+# Thư mục build
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]64/
+[Ll]og/
+[Ll]ogs/
+publish/
+*.publishproj
+PublishProfiles/
+
+# Thư mục và file riêng của từng máy
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+launchSettings.json
+
+# Kết quả build, cache, file tạm
+*.pdb
+*.ilk
+*.obj
+*.cache
+*.log
+*.tlog
+*.tmp
+*.tmp_proj
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.pch
+*.ncb
+*.aps
+*.opendb
+*.VC.db
+*.VC.VC.opendb
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Kết quả test, coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+
+# ReSharper / Rider / VS Code
+_ReSharper*/
+*.DotSettings.user
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ===== SQL Server =====
+# Chỉ commit script trong database/*.sql, không commit file dữ liệu hay bản backup
+*.mdf
+*.ldf
+*.ndf
+*.bak
+*.trn
+*.dbmdl
+*.jfm
+
+# Chuỗi kết nối riêng của từng máy (nếu có)
+appsettings.Local.json
+*.local.config
+
+# ===== Hệ điều hành =====
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ===== Agent AI =====
+# Skill dùng chung được commit (.agents/skills, .claude/skills);
+# cài đặt và lịch sử riêng của từng người thì không
+.claude/settings.local.json
+.claude/worktrees/
