@@ -187,6 +187,8 @@ Mọi người tự nhận task trên bảng phân công chung (link ở đầu 
 
 ## Dùng agent AI (Claude, Codex, Gemini)
 
+Hướng dẫn kiểm tra và giải thích hai task nền tảng: [T08 — MVVM và T09 — DbHelper](docs/T08-T09.md).
+
 Repo có sẵn skill theo chuẩn [Agent Skills](https://agentskills.io) để agent viết code đúng quy ước của nhóm:
 
 | Skill | Dùng khi |

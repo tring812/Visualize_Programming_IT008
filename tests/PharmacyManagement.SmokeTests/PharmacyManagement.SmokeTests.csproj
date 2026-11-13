@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!-- T08 chạy độc lập, không cần SQL Server hoặc thư viện test bên ngoài. -->
+  <ItemGroup>
+    <Compile Include="../../PharmacyManagement/ViewModels/BaseViewModel.cs" Link="BaseViewModel.cs" />
+    <Compile Include="../../PharmacyManagement/ViewModels/RelayCommand.cs" Link="RelayCommand.cs" />
+  </ItemGroup>
+
+  <!-- Bật bằng -p:CheckSql=true để thử đúng DbHelper trong ứng dụng. -->
+  <PropertyGroup Condition="'$(CheckSql)' == 'true'">
+    <DefineConstants>$(DefineConstants);SQL_CHECK</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(CheckSql)' == 'true'">
+    <ProjectReference Include="../../PharmacyManagement/PharmacyManagement.csproj" />
+    <Compile Remove="../../PharmacyManagement/ViewModels/BaseViewModel.cs" />
+    <Compile Remove="../../PharmacyManagement/ViewModels/RelayCommand.cs" />
+  </ItemGroup>
+</Project>
