@@ -20,7 +20,21 @@ Các skill nằm ở `.agents/skills/` (bản sao cho Claude Code ở `.claude/s
 - **Không thêm thư viện** (MVVM toolkit, Entity Framework, Dapper…) khi nhóm chưa đồng ý: đồ án chấm phần tự viết `INotifyPropertyChanged`, `ICommand` và ADO.NET.
 - **Không thêm chức năng ngoài phạm vi** trong README (biểu đồ, quản lý lô, in hóa đơn…). Gợi ý ghi vào mục "Hướng phát triển" của báo cáo.
 - **File chung** (`MainWindow.xaml`, `Resources/Styles.xaml`, `database/*.sql`, `App.xaml`, `BaseViewModel.cs`, `RelayCommand.cs`, `DbHelper.cs`): chỉ sửa khi task yêu cầu, và nhắc người dùng báo nhóm.
-- Mỗi người phải tự giải thích được code của mình khi vấn đáp. Sau khi viết code, tóm tắt ngắn gọn cách Binding và Command hoạt động trong phần vừa viết, đừng chỉ đưa code.
+- **Mỗi task phải có tài liệu giải thích trong `docs/`** (xem mục dưới). Sau khi viết code, vẫn tóm tắt 3–5 dòng trong chat cách Binding và Command hoạt động trong phần vừa viết, đừng chỉ đưa code.
+
+## Tài liệu giải thích cho vấn đáp
+
+Mỗi người phải tự giải thích được code của mình khi vấn đáp. Vì vậy khi làm bất kỳ task nào, luôn tạo (hoặc cập nhật nếu đã có) **một** file giải thích trong thư mục `docs/`:
+
+- **Tên file**: nội dung công việc viết ngắn gọn, chữ thường không dấu nối bằng `-`, **không kèm mã task**. Ví dụ: `docs/thuoc-crud.md`, `docs/dang-nhap.md`, `docs/nen-tang-mvvm-ket-noi-sql.md`.
+- **Nội dung** viết tiếng Việt có dấu, dễ hiểu với sinh viên, gồm đủ năm mục:
+  1. **Mục tiêu**: task làm gì, 1–2 câu.
+  2. **File đã làm**: mỗi file một dòng, nói rõ vai trò (Model, Repository, ViewModel, View).
+  3. **Khái niệm**: giải thích từng khái niệm dùng trong task, gắn với code thật của task (Binding, Command, `CanExecute`, `ObservableCollection`, tham số `@ten`, transaction…).
+  4. **Luồng hoạt động**: đi theo một thao tác cụ thể, ví dụ người dùng bấm nút → Command → ViewModel → Repository → SQL → giao diện cập nhật.
+  5. **Câu hỏi vấn đáp có thể gặp**: mỗi câu kèm câu trả lời ngắn.
+- Không ghi nhật ký môi trường hay kết quả build vào file này; những thứ đó để trong mô tả PR.
+- Commit file này trên cùng nhánh của task, trước khi tạo Pull Request.
 
 ## Lệnh hay dùng
 

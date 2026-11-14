@@ -72,6 +72,7 @@ Trong pathspec của git, `*` khớp cả dấu `/`, nên `*ViewModels/*.cs` tì
 
 - [ ] Commit message có mã task; PR mô tả cách thử.
 - [ ] Nếu sửa `database/*.sql`: cả hai script chạy lại được trên máy sạch, và PR ghi "cần chạy lại script".
+- [ ] Có file `docs/<noi-dung-ngan>.md` (không kèm mã task) đủ năm mục: Mục tiêu, File đã làm, Khái niệm, Luồng hoạt động, Câu hỏi vấn đáp; nội dung khớp với code trong PR, không chứa nhật ký build.
 - [ ] Người viết tự giải thích được: Binding nào nối thuộc tính nào, Command nào làm gì, vì sao dùng `ObservableCollection`. Nếu có chỗ họ chưa giải thích được, chỉ ra để họ đọc lại trước buổi demo.
 
 ## Mẫu báo cáo

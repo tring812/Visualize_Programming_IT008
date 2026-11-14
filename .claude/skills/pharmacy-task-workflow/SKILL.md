@@ -45,7 +45,8 @@ T14: form Thuốc kiểm tra giá bán phải lớn hơn 0
 
 1. Chạy checklist trong skill `pharmacy-review-checklist`.
 2. Build không lỗi, chạy thử đủ thêm/sửa/xóa và các ca nhập sai.
-3. Đẩy nhánh và tạo PR vào `main`:
+3. Tạo hoặc cập nhật file giải thích `docs/<noi-dung-ngan>.md` (ví dụ `docs/thuoc-crud.md`, không kèm mã task) đủ năm mục theo mục "Tài liệu giải thích cho vấn đáp" trong `AGENTS.md`, rồi commit trên cùng nhánh.
+4. Đẩy nhánh và tạo PR vào `main`:
 
 ```bash
 git push -u origin feature/T14-thuoc-crud
@@ -69,9 +70,12 @@ T14 — Màn Thuốc: CRUD, ComboBox loại, DatePicker hạn dùng
 
 ## File chung có sửa
 - (không có) / MainWindow.xaml: thêm DataTemplate cho ThuocViewModel
+
+## Tài liệu vấn đáp
+- docs/thuoc-crud.md
 ```
 
-4. Nhắc người dùng chuyển task sang **Chờ review**.
+5. Nhắc người dùng chuyển task sang **Chờ review**.
 
 ## 4. Review và gộp
 
