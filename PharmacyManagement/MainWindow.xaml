@@ -15,9 +15,12 @@
         </DataTemplate>
     </Window.Resources>
 
-    <!-- Tạm thời hiển thị thẳng màn Loại thuốc. T10 sẽ thay bằng menu trái
-         + ContentControl Content="{Binding CurrentViewModel}" của MainViewModel. -->
-    <ContentControl>
-        <vm:LoaiThuocViewModel/>
-    </ContentControl>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Left" Margin="12">
+            <Button Content="Loại thuốc" Padding="16,8"
+                    Command="{Binding NavigateCommand}" CommandParameter="LoaiThuoc"/>
+        </StackPanel>
+
+        <ContentControl Content="{Binding CurrentViewModel}"/>
+    </DockPanel>
 </Window>
