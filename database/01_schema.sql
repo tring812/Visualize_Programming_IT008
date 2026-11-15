@@ -44,10 +44,11 @@ CREATE TABLE dbo.NhanVien
     HoTen NVARCHAR(100) NOT NULL,
     SoDienThoai VARCHAR(20) NOT NULL,
     TenDangNhap NVARCHAR(50) NOT NULL,
-    MatKhauHash CHAR(64) NOT NULL,
+    MatKhau NVARCHAR(50) NOT NULL,   -- lưu nguyên văn, nhóm không băm mật khẩu
     VaiTro NVARCHAR(20) NOT NULL CONSTRAINT DF_NhanVien_VaiTro DEFAULT N'NhanVien',
     TrangThai BIT NOT NULL CONSTRAINT DF_NhanVien_TrangThai DEFAULT 1,
     CONSTRAINT UQ_NhanVien_TenDangNhap UNIQUE (TenDangNhap),
+    CONSTRAINT CK_NhanVien_MatKhau CHECK (LEN(MatKhau) >= 6),
     CONSTRAINT CK_NhanVien_VaiTro CHECK (VaiTro IN (N'QuanLy', N'NhanVien'))
 );
 

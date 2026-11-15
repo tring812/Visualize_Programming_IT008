@@ -56,7 +56,7 @@ Mẫu đầy đủ của từng file: [references/code-templates.md](references/
 
 ## Trường hợp đặc biệt
 
-- **PasswordBox** (Đăng nhập, Đăng ký): `Password` không bind được. Truyền chính `PasswordBox` qua `CommandParameter="{Binding ElementName=pwd}"`, trong Command đọc `((PasswordBox)p).Password` rồi băm SHA-256 ngay. Đây là ngoại lệ duy nhất được phép đụng tới control, giải thích điều này khi viết.
+- **PasswordBox** (Đăng nhập, Đăng ký): `Password` không bind được. Truyền chính `PasswordBox` qua `CommandParameter="{Binding ElementName=pwd}"`, trong Command đọc `((PasswordBox)p).Password` rồi truyền xuống Repository làm tham số `@MatKhau` (nhóm không băm mật khẩu). Đây là ngoại lệ duy nhất được phép đụng tới control, giải thích điều này khi viết.
 - **Phiếu nhiều dòng** (Nhập hàng, Bán hàng): ViewModel giữ `ObservableCollection<ChiTiet>` tạm trong bộ nhớ, `TongTien` tính lại mỗi khi danh sách đổi (`CollectionChanged`). Lưu cả phiếu một lần bằng `SqlTransaction` trong Repository, xem skill `pharmacy-database`.
 - **Ẩn menu theo vai trò**: thuộc tính `bool LaQuanLy` trên ViewModel của MainWindow + `BooleanToVisibilityConverter`.
 - **Tô màu dòng** (Tồn kho, Hạn dùng): `DataGrid.RowStyle` với `DataTrigger` bind vào thuộc tính `bool` như `SapHetHang`, `SapHetHan` tính sẵn trong Model, không dùng converter phức tạp.
