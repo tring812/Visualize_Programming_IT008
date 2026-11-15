@@ -36,6 +36,23 @@ Mỗi người phải tự giải thích được code của mình khi vấn đ�
 - Không ghi nhật ký môi trường hay kết quả build vào file này; những thứ đó để trong mô tả PR.
 - Commit file này trên cùng nhánh của task, trước khi tạo Pull Request.
 
+## Không can thiệp vào nhánh của người khác
+
+Chỉ được sửa, commit, push, merge, rebase hoặc xóa trên một nhánh khi **mọi commit riêng của nhánh đó** (các commit chưa có trên `main`) do chính người dùng hiện tại tạo. Nhánh của thành viên khác chỉ được đọc.
+
+Kiểm tra trước khi đụng vào một nhánh có sẵn:
+
+```bash
+git fetch origin
+git config user.email                                  # email của người dùng hiện tại
+git log origin/main..origin/<ten-nhanh> --format='%an <%ae>' | sort -u
+```
+
+- Kết quả chỉ có đúng email của người dùng hiện tại (hoặc rỗng, tức nhánh mới tạo): được làm việc trên nhánh.
+- Có tên người khác: **không** commit, push, merge `main` vào, rebase, force push hay xóa nhánh đó, kể cả khi người dùng nhờ "sửa luôn".
+- Khi cần thay đổi phần của người khác, tạo nhánh riêng từ `main` (ví dụ `fix/<ma-task>-<ten>`) hoặc nhờ tác giả tự sửa; nói rõ cho người dùng biết nhánh đó thuộc về ai và cần báo người đó điều gì.
+- `main` chỉ thay đổi qua Pull Request, không push thẳng.
+
 ## Lệnh hay dùng
 
 ```bash
