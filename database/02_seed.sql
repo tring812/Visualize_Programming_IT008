@@ -4,9 +4,7 @@ GO
 -- T06: Dữ liệu mẫu cho 9 bảng. Chạy sau database/01_schema.sql trên CSDL vừa tạo.
 -- Tài khoản quản lý: admin / admin123.
 -- Tài khoản nhân viên: nv01, nv02, nv03, nv04 / nhanvien123; nv04 đã bị khóa.
--- MatKhauHash dùng SHA-256 trên UTF-8, biểu diễn bằng 64 ký tự hex viết hoa.
--- Lệnh tính hash admin trong PowerShell:
--- [BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes('admin123'))).Replace('-','')
+-- Mật khẩu lưu nguyên văn trong cột MatKhau (nhóm không băm mật khẩu).
 -- Giá nhập, giá bán (VNĐ theo Viên/Gói), hạn dùng, thông tin liên hệ và giao dịch là dữ liệu giả lập.
 -- Các mã IDENTITY bên dưới tương ứng thứ tự INSERT khi chạy ngay sau 01_schema.sql.
 
@@ -43,13 +41,13 @@ BEGIN TRY
         (N'Phạm Thanh Dũng', '0900000004', N'48 Điện Biên Phủ, TP. Hồ Chí Minh'),
         (N'Võ Thị Hồng', '0900000005', N'61 Lý Thường Kiệt, TP. Hồ Chí Minh');
 
-    INSERT INTO dbo.NhanVien (HoTen, SoDienThoai, TenDangNhap, MatKhauHash, VaiTro, TrangThai)
+    INSERT INTO dbo.NhanVien (HoTen, SoDienThoai, TenDangNhap, MatKhau, VaiTro, TrangThai)
     VALUES
-        (N'Nguyễn Hoàng Nam', '0910000001', N'admin', '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9', N'QuanLy', 1),
-        (N'Trần Thị Mai', '0910000002', N'nv01', '42FAE8A13D42327ABBB8D700B0E2A7452F4198A63DFD3C88D6D052AD6AEE7F20', N'NhanVien', 1),
-        (N'Lê Minh Tuấn', '0910000003', N'nv02', '42FAE8A13D42327ABBB8D700B0E2A7452F4198A63DFD3C88D6D052AD6AEE7F20', N'NhanVien', 1),
-        (N'Phạm Ngọc Linh', '0910000004', N'nv03', '42FAE8A13D42327ABBB8D700B0E2A7452F4198A63DFD3C88D6D052AD6AEE7F20', N'NhanVien', 1),
-        (N'Võ Quốc Huy', '0910000005', N'nv04', '42FAE8A13D42327ABBB8D700B0E2A7452F4198A63DFD3C88D6D052AD6AEE7F20', N'NhanVien', 0);
+        (N'Nguyễn Hoàng Nam', '0910000001', N'admin', N'admin123', N'QuanLy', 1),
+        (N'Trần Thị Mai', '0910000002', N'nv01', N'nhanvien123', N'NhanVien', 1),
+        (N'Lê Minh Tuấn', '0910000003', N'nv02', N'nhanvien123', N'NhanVien', 1),
+        (N'Phạm Ngọc Linh', '0910000004', N'nv03', N'nhanvien123', N'NhanVien', 1),
+        (N'Võ Quốc Huy', '0910000005', N'nv04', N'nhanvien123', N'NhanVien', 0);
 
     -- Tên, hàm lượng và dạng thuốc đối chiếu từ nguồn chính hãng.
     -- Panadol 500 mg: https://www.panadol.com/content/cf-consumer-healthcare/wellness-panadol/vi_vn/home/san-pham/san-pham-nguoi-lon/giam-dau-va-ha-sot/panadol-.html

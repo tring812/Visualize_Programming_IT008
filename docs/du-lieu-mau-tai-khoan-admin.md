@@ -8,7 +8,7 @@ Viết `database/02_seed.sql` để cả nhóm có cùng bộ dữ liệu ban đ
 
 | File | Thành phần | Vai trò |
 | --- | --- | --- |
-| `database/02_seed.sql` | Script SQL khởi tạo dữ liệu | Chèn 60 dòng vào 9 bảng, lưu mật khẩu dạng SHA-256, tạo dữ liệu giao dịch có tổng tiền và tồn kho khớp nhau |
+| `database/02_seed.sql` | Script SQL khởi tạo dữ liệu | Chèn 60 dòng vào 9 bảng, lưu mật khẩu mẫu nguyên văn, tạo dữ liệu giao dịch có tổng tiền và tồn kho khớp nhau |
 | `docs/du-lieu-mau-tai-khoan-admin.md` | Tài liệu giải thích | Giải thích từng phần của script, luồng chạy và câu hỏi để chuẩn bị vấn đáp |
 
 Script sử dụng các bảng, cột và ràng buộc được định nghĩa trong `database/01_schema.sql`. Cách khởi tạo của bộ seed là chạy `01_schema.sql` để tạo mới `PharmacyDB`, sau đó chạy toàn bộ `02_seed.sql`.
@@ -103,39 +103,21 @@ Hai bảng chi tiết dùng khóa chính ghép. Ví dụ, cặp `(MaHD, MaThuoc)
 
 `TrangThai` là cột `BIT`. Giá trị `1` biểu thị tài khoản hoạt động, giá trị `0` biểu thị tài khoản đã khóa. Dòng `nv04` tạo tình huống để phần đăng nhập kiểm tra tài khoản bị khóa. Các phiếu nhập và hóa đơn trong seed đều tham chiếu nhân viên đang hoạt động.
 
-### SHA-256, UTF-8 và `MatKhauHash`
+### Cột `MatKhau` và vì sao không băm mật khẩu
 
-Script lưu chuỗi băm vào cột `MatKhauHash CHAR(64)`. Mật khẩu mẫu được ghi ở comment đầu file để các thành viên biết thông tin đăng nhập.
+Mật khẩu mẫu được ghi thẳng vào cột `MatKhau NVARCHAR(50)` của `NhanVien`, ví dụ `N'admin123'`. Nhóm quyết định không băm mật khẩu vì đồ án chạy trên một máy và ưu tiên làm đủ phạm vi chức năng; băm mật khẩu được ghi vào mục "Hướng phát triển" của báo cáo.
 
-Quá trình tạo giá trị lưu trong CSDL đi qua ba bước
+Schema có ràng buộc `CHECK (LEN(MatKhau) >= 6)`, nên mọi mật khẩu mẫu đều dài ít nhất 6 ký tự (`admin123` có 8, `nhanvien123` có 11).
 
-```text
-"admin123" → các byte UTF-8 → SHA-256 → chuỗi hex viết hoa
+Khi viết chức năng đăng nhập, code so mật khẩu ngay trong câu SQL bằng tham số
+
+```sql
+SELECT MaNV, HoTen, VaiTro, TrangThai
+FROM dbo.NhanVien
+WHERE TenDangNhap = @TenDangNhap AND MatKhau = @MatKhau;
 ```
 
-`UTF-8` là cách chuyển chuỗi thành dãy byte đầu vào. SHA-256 xử lý dãy byte này và tạo kết quả dài 256 bit, tương đương 32 byte. Mỗi byte được biểu diễn bằng hai ký tự hex, nên chuỗi cuối cùng dài `32 × 2 = 64` ký tự, khớp cột `CHAR(64)`.
-
-Lệnh PowerShell đã dùng để tính hash cho quản lý là
-
-```powershell
-[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes('admin123'))).Replace('-','')
-```
-
-`GetBytes` chuyển mật khẩu thành byte UTF-8. `ComputeHash` tính SHA-256. `BitConverter.ToString` biểu diễn các byte bằng ký tự hex viết hoa có dấu gạch nối. `Replace('-','')` bỏ các dấu gạch nối để thu được chuỗi 64 ký tự.
-
-Hash của `admin123` được dán vào dòng tài khoản `admin` trong seed
-
-```text
-240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9
-```
-
-Hash của `nhanvien123` được dùng chung cho bốn tài khoản nhân viên mẫu
-
-```text
-42FAE8A13D42327ABBB8D700B0E2A7452F4198A63DFD3C88D6D052AD6AEE7F20
-```
-
-Cùng mật khẩu, cùng cách chuyển byte và cùng thuật toán sẽ tạo cùng kết quả băm. Khi phần đăng nhập được triển khai, code cần thực hiện đúng quy ước SHA-256 trên UTF-8, biểu diễn hex viết hoa, rồi so sánh với `MatKhauHash` và kiểm tra `TrangThai = 1`.
+rồi kiểm tra `TrangThai = 1`. Tham số `@MatKhau` vẫn bắt buộc: nếu nối chuỗi, người dùng gõ `' OR '1'='1` vào ô mật khẩu có thể đăng nhập mà không cần mật khẩu.
 
 ### Ngày hiện tại, `DATEADD` và dữ liệu cảnh báo
 
@@ -355,19 +337,15 @@ Tên đăng nhập là `admin`, mật khẩu mẫu là `admin123`, `VaiTro = N'Q
 
 **Mật khẩu admin được lưu vào CSDL như thế nào?**
 
-Mật khẩu được chuyển thành byte UTF-8, băm bằng SHA-256 rồi biểu diễn thành chuỗi hex viết hoa. Chuỗi 64 ký tự được lưu trong `MatKhauHash`.
+Lưu nguyên văn `admin123` trong cột `MatKhau`. Nhóm không băm mật khẩu và ghi việc băm vào "Hướng phát triển".
 
-**Vì sao hash SHA-256 có 64 ký tự?**
+**Vì sao không băm mật khẩu? Có rủi ro gì?**
 
-SHA-256 cho kết quả 256 bit, tương đương 32 byte. Mỗi byte viết thành hai ký tự hex, nên tổng cộng có 64 ký tự.
+Ai đọc được CSDL sẽ thấy mật khẩu. Đồ án chạy trên một máy nên nhóm chấp nhận rủi ro này để tập trung vào phạm vi chức năng. Nếu phát triển tiếp, sẽ lưu chuỗi băm thay cho mật khẩu gốc.
 
 **Khi viết chức năng đăng nhập, cần khớp gì với seed?**
 
-Code cần dùng cùng cách lấy byte UTF-8, băm SHA-256 và tạo chuỗi hex viết hoa. Sau đó so sánh với `MatKhauHash` của tên đăng nhập tương ứng và kiểm tra tài khoản có `TrangThai = 1`.
-
-**Vì sao bốn nhân viên có cùng hash?**
-
-Bốn tài khoản mẫu đều dùng mật khẩu `nhanvien123`. Cùng đầu vào và cùng cách băm sẽ cho cùng chuỗi hash.
+So `TenDangNhap` và `MatKhau` bằng câu SQL có tham số, rồi kiểm tra `TrangThai = 1`. Mật khẩu mẫu: `admin123` cho admin, `nhanvien123` cho bốn nhân viên.
 
 **Tài khoản `nv04` dùng để kiểm tra trường hợp nào?**
 
