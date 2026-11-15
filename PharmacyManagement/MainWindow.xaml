@@ -7,17 +7,25 @@
         xmlns:vm="clr-namespace:PharmacyManagement.ViewModels"
         xmlns:views="clr-namespace:PharmacyManagement.Views"
         mc:Ignorable="d"
-        Title="Quản lý tiệm thuốc" Height="600" Width="900">
+        Title="Quản lý tiệm thuốc" Height="600" Width="900" MinWidth="580" MinHeight="420">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
     <Window.Resources>
         <!-- Gặp LoaiThuocViewModel ở đâu thì WPF vẽ bằng LoaiThuocView -->
         <DataTemplate DataType="{x:Type vm:LoaiThuocViewModel}">
             <views:LoaiThuocView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NhaCungCapViewModel}">
+            <views:NhaCungCapView/>
+        </DataTemplate>
     </Window.Resources>
 
-    <!-- Tạm thời hiển thị thẳng màn Loại thuốc. T10 sẽ thay bằng menu trái
-         + ContentControl Content="{Binding CurrentViewModel}" của MainViewModel. -->
-    <ContentControl>
-        <vm:LoaiThuocViewModel/>
-    </ContentControl>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Left" Margin="12,16,0,16">
+            <Button Content="Loại thuốc" Command="{Binding OpenLoaiThuocCommand}" Padding="10,6"/>
+            <Button Content="Nhà cung cấp" Command="{Binding OpenNhaCungCapCommand}" Padding="10,6" Margin="0,8,0,0"/>
+        </StackPanel>
+        <ContentControl Content="{Binding CurrentViewModel}"/>
+    </DockPanel>
 </Window>
