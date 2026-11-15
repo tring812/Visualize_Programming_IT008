@@ -91,7 +91,7 @@ erDiagram
         nvarchar HoTen
         varchar SoDienThoai
         nvarchar TenDangNhap UK
-        char MatKhauHash "SHA-256 hex"
+        nvarchar MatKhau "lưu nguyên văn, tối thiểu 6 ký tự"
         nvarchar VaiTro "QuanLy hoặc NhanVien"
         bit TrangThai "0 = đã khóa"
     }
@@ -156,7 +156,7 @@ erDiagram
 - Hóa đơn và phiếu nhập lưu trong một `SqlTransaction`; lỗi ở bước nào thì `Rollback` toàn bộ.
 - `CT_HoaDon.DonGia` lưu giá tại thời điểm bán.
 - Tiền dùng `DECIMAL(18,0)`; chữ tiếng Việt dùng `NVARCHAR` và `N'...'`.
-- Mật khẩu băm SHA-256 lưu vào `MatKhauHash`, không lưu mật khẩu gốc.
+- Mật khẩu lưu nguyên văn trong `NhanVien.MatKhau` (nhóm không băm mật khẩu, ghi vào "Hướng phát triển"); đăng nhập so bằng câu SQL có tham số `@MatKhau`.
 - Không ai sửa bảng trực tiếp trong SSMS mà không cập nhật script trong `database/`.
 
 ## Quy ước làm việc nhóm

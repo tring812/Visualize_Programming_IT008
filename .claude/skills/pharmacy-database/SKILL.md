@@ -1,6 +1,6 @@
 ---
 name: pharmacy-database
-description: Quy tắc CSDL SQL Server của đồ án Quản lý tiệm thuốc — 9 bảng, script database/01_schema.sql và 02_seed.sql, ràng buộc, transaction cho hóa đơn và phiếu nhập, băm mật khẩu, cảnh báo hạn dùng. Dùng skill này mỗi khi người dùng tạo hoặc sửa bảng, cột, khóa, dữ liệu mẫu, viết câu SELECT/INSERT/UPDATE/JOIN/GROUP BY, viết Repository có SQL, lưu hóa đơn hay phiếu nhập, cộng trừ tồn kho, hoặc gặp lỗi SqlException, lỗi kết nối, lỗi khóa ngoại — kể cả khi chỉ nói "database", "SQL", "bảng", "ERD", "seed", "tồn kho".
+description: Quy tắc CSDL SQL Server của đồ án Quản lý tiệm thuốc — 9 bảng, script database/01_schema.sql và 02_seed.sql, ràng buộc, transaction cho hóa đơn và phiếu nhập, mật khẩu và đăng nhập, cảnh báo hạn dùng. Dùng skill này mỗi khi người dùng tạo hoặc sửa bảng, cột, khóa, dữ liệu mẫu, viết câu SELECT/INSERT/UPDATE/JOIN/GROUP BY, viết Repository có SQL, lưu hóa đơn hay phiếu nhập, cộng trừ tồn kho, hoặc gặp lỗi SqlException, lỗi kết nối, lỗi khóa ngoại — kể cả khi chỉ nói "database", "SQL", "bảng", "ERD", "seed", "tồn kho".
 ---
 
 # CSDL đồ án Quản lý tiệm thuốc
@@ -11,7 +11,7 @@ CSDL tên `PharmacyDB` trên SQL Server Express, instance `.\SQLEXPRESS`. Mỗi 
 
 | Bảng | Cột chính | Quan hệ |
 | --- | --- | --- |
-| `NhanVien` | `MaNV` PK, `HoTen`, `SoDienThoai`, `TenDangNhap` UNIQUE, `MatKhauHash`, `VaiTro`, `TrangThai` BIT | |
+| `NhanVien` | `MaNV` PK, `HoTen`, `SoDienThoai`, `TenDangNhap` UNIQUE, `MatKhau`, `VaiTro`, `TrangThai` BIT | |
 | `KhachHang` | `MaKH` PK, `HoTen`, `SoDienThoai` UNIQUE, `DiaChi` | |
 | `LoaiThuoc` | `MaLoai` PK IDENTITY, `TenLoai` | |
 | `NhaCungCap` | `MaNCC` PK, `TenNCC`, `DiaChi`, `SoDienThoai` | |
@@ -50,7 +50,7 @@ GO
 -- Tạo bảng theo thứ tự: bảng không phụ thuộc trước, bảng có khóa ngoại sau
 ```
 
-`database/02_seed.sql` chèn dữ liệu mẫu và một tài khoản Quản lý `admin` để đăng nhập lần đầu. `MatKhauHash` của admin phải là chuỗi SHA-256 (hex) đúng như C# tạo ra, nên tính bằng chính hàm băm trong code rồi dán vào, và ghi mật khẩu mẫu trong comment cho nhóm biết.
+`database/02_seed.sql` chèn dữ liệu mẫu và một tài khoản Quản lý `admin` (mật khẩu `admin123`) để đăng nhập lần đầu; ghi tài khoản mẫu trong comment đầu file cho nhóm biết.
 
 Khi sửa script: sửa cả hai file cho khớp, chạy lại cả hai trong SSMS, rồi ghi rõ trong commit và báo nhóm "chạy lại script" vì CSDL cũ của mọi người sẽ lệch.
 
@@ -71,20 +71,17 @@ Nếu `ExecuteNonQuery()` trả về 0 thì thuốc không đủ hoặc đã h�
 
 **`CT_HoaDon.DonGia`** lưu giá tại thời điểm bán, vì `Thuoc.GiaBan` có thể đổi về sau.
 
-**Mật khẩu**: không lưu mật khẩu gốc. C# băm bằng SHA-256:
+**Mật khẩu**: nhóm đã quyết định **không băm** mật khẩu (đồ án chạy trên một máy, ưu tiên phạm vi; băm mật khẩu ghi vào "Hướng phát triển" của báo cáo). Cột `NhanVien.MatKhau NVARCHAR(50)` lưu nguyên văn, có `CHECK (LEN(MatKhau) >= 6)`. Không thêm `PasswordHelper`, SHA-256 hay thư viện băm nào.
 
-```csharp
-using System.Security.Cryptography;
-using System.Text;
+Đăng nhập: so trực tiếp trong SQL bằng tham số, rồi kiểm tra `TrangThai = 1`:
 
-public static string HashPassword(string password)
-{
-    byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
-    return Convert.ToHexString(bytes);   // 64 ký tự hex, cột NVARCHAR(64) hoặc CHAR(64)
-}
+```sql
+SELECT MaNV, HoTen, VaiTro, TrangThai
+FROM NhanVien
+WHERE TenDangNhap = @TenDangNhap AND MatKhau = @MatKhau;
 ```
 
-Đăng nhập: băm mật khẩu vừa nhập rồi so với `MatKhauHash`, và kiểm tra `TrangThai = 1`.
+Vẫn bắt buộc dùng tham số `@MatKhau`, không nối chuỗi: nối chuỗi ở đây cho phép đăng nhập không cần mật khẩu bằng SQL injection (ví dụ gõ `' OR '1'='1`). Không hiện cột mật khẩu trong DataGrid danh sách nhân viên.
 
 **Tài khoản**: tự đăng ký luôn là `N'NhanVien'`; chỉ Quản lý đổi được vai trò. Nhân viên đã lập hóa đơn hay phiếu nhập thì không xóa, chỉ khóa bằng `TrangThai = 0`.
 
